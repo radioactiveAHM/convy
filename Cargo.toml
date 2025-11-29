@@ -1,0 +1,29 @@
+[package]
+name = "convy"
+version = "0.1.0"
+edition = "2024"
+description = "Image processing CLI."
+homepage = "https://github.com/radioactiveAHM/convy"
+repository = "https://github.com/radioactiveAHM/convy"
+authors = ["djahmadfire@gmail.com"]
+keywords = ["cli", "image"]
+categories = ["multimedia::images", "command-line-utilities"]
+
+[dependencies]
+clap = { version = "4.5.53", default-features = false, features = [
+    "help",
+    "std",
+    "error-context",
+    "suggestions",
+    "usage",
+    "derive",
+] }
+image = "0.25.9"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = 3
+strip = true
+debug = false

@@ -56,6 +56,9 @@ Options:
       --hue <DEGREES>                  Hue rotation (0–360)
       --color <COLOR>                  Convert to color format
                                        [values: rgb8, rgb16, rgb32, rgba8, rgba16, rgba32, luma8, luma16, luma-a8, luma-a16]
+  -q, --quality <QUALITY>              Jpeg quality [default: 100]
+      --compression-type               Png compression type. [possible values: 1-9, best, default, fast, uncompressed]
+      --png-filtertype                 Png filter type. [possible values: adaptive, avg, none, paeth, sub, up] [default: adaptive]
       --buffer-size <BYTES>            File I/O buffer size [default: 1024]
       --threads <N>                    Number of worker threads (0 = auto) [default: 0]
   -h, --help                           Show help

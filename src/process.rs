@@ -28,9 +28,30 @@ pub fn process(args: &arg::Args, input: &std::path::PathBuf) -> std::io::Result<
 		args,
 		image::load(&mut input_br, img_format).map_err(std::io::Error::other)?,
 	);
-	img.write_to(&mut output_bw, out_format)
-		.map_err(std::io::Error::other)?;
-	Ok(())
+
+	match out_format {
+		image::ImageFormat::Jpeg => {
+			let mut jpg = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut output_bw, args.quality);
+			jpg.encode_image(&img).map_err(std::io::Error::other)
+		}
+		image::ImageFormat::Png => {
+			let png = image::codecs::png::PngEncoder::new_with_quality(
+				&mut output_bw,
+				args.compression_type
+					.unwrap_or(image::codecs::png::CompressionType::Default),
+				args.png_filtertype.unwrap_or(image::codecs::png::FilterType::Adaptive),
+			);
+			image::ImageEncoder::write_image(
+				png,
+				img.as_bytes(),
+				img.width(),
+				img.height(),
+				image::ExtendedColorType::from(img.color()),
+			)
+			.map_err(std::io::Error::other)
+		}
+		_ => img.write_to(&mut output_bw, out_format).map_err(std::io::Error::other),
+	}
 }
 
 fn parse_type(input: &std::path::Path) -> std::io::Result<image::ImageFormat> {

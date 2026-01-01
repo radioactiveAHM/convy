@@ -46,6 +46,31 @@ fn parse_unsharpen(s: &str) -> clap::error::Result<(f32, i32)> {
 	}
 }
 
+fn parse_compression_type(s: &str) -> clap::error::Result<image::codecs::png::CompressionType> {
+	match s {
+		"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => {
+			Ok(image::codecs::png::CompressionType::Level(s.parse().unwrap()))
+		}
+		"best" => Ok(image::codecs::png::CompressionType::Best),
+		"default" => Ok(image::codecs::png::CompressionType::Default),
+		"fast" => Ok(image::codecs::png::CompressionType::Fast),
+		"uncompressed" => Ok(image::codecs::png::CompressionType::Uncompressed),
+		_ => Err(clap::error::Error::new(clap::error::ErrorKind::InvalidValue)),
+	}
+}
+
+fn parse_png_filtertype(s: &str) -> clap::error::Result<image::codecs::png::FilterType> {
+	match s {
+		"adaptive" => Ok(image::codecs::png::FilterType::Adaptive),
+		"avg" => Ok(image::codecs::png::FilterType::Avg),
+		"none" => Ok(image::codecs::png::FilterType::NoFilter),
+		"paeth" => Ok(image::codecs::png::FilterType::Paeth),
+		"sub" => Ok(image::codecs::png::FilterType::Sub),
+		"up" => Ok(image::codecs::png::FilterType::Up),
+		_ => Err(clap::error::Error::new(clap::error::ErrorKind::InvalidValue)),
+	}
+}
+
 #[derive(ValueEnum, Debug, Clone, Copy)]
 pub enum Color {
 	RGB8,
@@ -144,6 +169,17 @@ pub struct Args {
 	/// Convert image to a different color format.
 	#[arg(long, value_enum)]
 	pub color: Option<Color>,
+
+	/// Jpeg quality
+	#[arg(short, long, default_value_t = 100)]
+	pub quality: u8,
+
+	/// Png compression type. [possible values: 1-9, best, default, fast, uncompressed].
+	#[arg(long, value_parser = parse_compression_type)]
+	pub compression_type: Option<image::codecs::png::CompressionType>,
+	/// Png filter type. [possible values: adaptive, avg, none, paeth, sub, up].
+	#[arg(long, value_parser = parse_png_filtertype)]
+	pub png_filtertype: Option<image::codecs::png::FilterType>,
 
 	/// Internal buffer size (bytes) used for file I/O.
 	#[arg(long, default_value_t = 1024)]

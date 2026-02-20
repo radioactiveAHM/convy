@@ -103,7 +103,7 @@ pub struct Args {
 
 	// ---------------- Resize ----------------
 	/// Resampling filter to use when resizing.
-	#[arg(short, long, value_enum, default_value_t = Filter::Nearest)]
+	#[arg(short, long, value_enum, default_value_t = Filter::Lanczos3)]
 	pub filter: Filter,
 
 	/// Target width:
@@ -170,9 +170,16 @@ pub struct Args {
 	#[arg(long, value_enum)]
 	pub color: Option<Color>,
 
-	/// Jpeg quality
+	/// Jpeg/Webp quality
 	#[arg(short, long, default_value_t = 100)]
 	pub quality: u8,
+
+	/// Webp method level. possible values: 1-6
+	#[arg(long, default_value_t = 6)]
+	pub method: i32,
+	/// Webp hint. DEFAULT = 0, PICTURE = 1, PHOTO = 2, GRAPH = 3, LAST = 4
+	#[arg(long, default_value_t = 0)]
+	pub hint: i32,
 
 	/// Png compression type. [possible values: 1-9, best, default, fast, uncompressed].
 	#[arg(long, value_parser = parse_compression_type)]
@@ -181,7 +188,7 @@ pub struct Args {
 	#[arg(long, value_parser = parse_png_filtertype)]
 	pub png_filtertype: Option<image::codecs::png::FilterType>,
 
-	/// Internal buffer size (bytes) used for file I/O.
+	/// Internal buffer size (KB) used for file I/O.
 	#[arg(long, default_value_t = 1024)]
 	pub buffer_size: usize,
 

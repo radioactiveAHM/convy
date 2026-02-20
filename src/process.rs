@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use crate::arg;
 
 pub fn bulk_process(dir_entries: Vec<std::path::PathBuf>, args: &arg::Args) {
@@ -49,6 +51,41 @@ pub fn process(args: &arg::Args, input: &std::path::PathBuf) -> std::io::Result<
 				image::ExtendedColorType::from(img.color()),
 			)
 			.map_err(std::io::Error::other)
+		}
+		image::ImageFormat::WebP => {
+			if args.quality != 100 {
+				let mut webp_config = webp::WebPConfig::new().unwrap();
+				webp_config.quality = args.quality as f32;
+				webp_config.alpha_compression = 1;
+				webp_config.method = args.method;
+				webp_config.thread_level = 1;
+
+				match args.hint {
+					0 => webp_config.image_hint = libwebp_sys::WebPImageHint::WEBP_HINT_DEFAULT,
+					1 => webp_config.image_hint = libwebp_sys::WebPImageHint::WEBP_HINT_PICTURE,
+					2 => webp_config.image_hint = libwebp_sys::WebPImageHint::WEBP_HINT_PHOTO,
+					3 => webp_config.image_hint = libwebp_sys::WebPImageHint::WEBP_HINT_GRAPH,
+					4 => webp_config.image_hint = libwebp_sys::WebPImageHint::WEBP_HINT_LAST,
+					_ => panic!("invalid hint"),
+				};
+
+				match webp::Encoder::from_image(&img)
+					.map_err(std::io::Error::other)?
+					.encode_advanced(&webp_config)
+				{
+					Ok(encoded_data) => {
+						output_bw.write_all(&encoded_data)?;
+						output_bw.flush()?;
+						Ok(())
+					}
+					Err(e) => {
+						println!("{e:?}");
+						Err(std::io::Error::other("webp encode failed"))
+					}
+				}
+			} else {
+				img.write_to(&mut output_bw, out_format).map_err(std::io::Error::other)
+			}
 		}
 		_ => img.write_to(&mut output_bw, out_format).map_err(std::io::Error::other),
 	}

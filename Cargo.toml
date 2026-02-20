@@ -10,7 +10,7 @@ keywords = ["cli", "image"]
 categories = ["multimedia::images", "command-line-utilities"]
 
 [dependencies]
-clap = { version = "4.5.53", default-features = false, features = [
+clap = { version = "4.5.60", default-features = false, features = [
     "help",
     "std",
     "error-context",
@@ -19,6 +19,8 @@ clap = { version = "4.5.53", default-features = false, features = [
     "derive",
 ] }
 image = "0.25.9"
+libwebp-sys = "=0.9.6"
+webp = "0.3.1"
 
 [profile.release]
 panic = "abort"

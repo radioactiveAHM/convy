@@ -10,7 +10,7 @@ keywords = ["cli", "image"]
 categories = ["multimedia::images", "command-line-utilities"]
 
 [dependencies]
-clap = { version = "4.5.60", default-features = false, features = [
+clap = { version = "4.6.1", default-features = false, features = [
     "help",
     "std",
     "error-context",
@@ -18,9 +18,9 @@ clap = { version = "4.5.60", default-features = false, features = [
     "usage",
     "derive",
 ] }
-image = "0.25.9"
-libwebp-sys = "=0.9.6"
-webp = "0.3.1"
+image = "0.25.10"
+libwebp-sys = "0.14.4"
+webp = { git = "https://github.com/radioactiveAHM/webp.git" }
 
 [profile.release]
 panic = "abort"

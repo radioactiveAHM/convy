@@ -46,6 +46,24 @@ fn parse_unsharpen(s: &str) -> clap::error::Result<(f32, i32)> {
 	}
 }
 
+fn parse_ablur(s: &str) -> clap::error::Result<(u32, f32)> {
+	let mut split = s.split(",");
+	if let Some(kernel_size) = split.next()
+		&& let Some(sigma) = split.next()
+	{
+		Ok((
+			kernel_size
+				.parse()
+				.map_err(|_| clap::error::Error::new(clap::error::ErrorKind::InvalidValue))?,
+			sigma
+				.parse()
+				.map_err(|_| clap::error::Error::new(clap::error::ErrorKind::InvalidValue))?,
+		))
+	} else {
+		Err(clap::error::Error::new(clap::error::ErrorKind::InvalidValue))
+	}
+}
+
 fn parse_compression_type(s: &str) -> clap::error::Result<image::codecs::png::CompressionType> {
 	match s {
 		"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => {
@@ -128,6 +146,11 @@ pub struct Args {
 	/// Apply Gaussian blur. Value is the blur sigma.
 	#[arg(long)]
 	pub blur: Option<f32>,
+
+	/// Apply Advance Gaussian blur. `"kernel_size,sigma"`.
+	/// Example: `"3,0.8"` → kernel_size=3, sigma=0.8.
+	#[arg(long, value_parser = parse_ablur)]
+	pub ablur: Option<(u32, f32)>,
 
 	/// Adjust image contrast. Positive values increase contrast, negative decrease.
 	#[arg(long)]

@@ -1,4 +1,5 @@
 mod arg;
+mod hacks;
 mod process;
 mod threading;
 

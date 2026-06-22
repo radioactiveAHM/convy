@@ -20,16 +20,18 @@ pub fn process(args: &arg::Args, input: &std::path::PathBuf) -> std::io::Result<
 		img_format
 	};
 
-	let mut input_br = std::io::BufReader::with_capacity(args.buffer_size * 1024, std::fs::File::open(input)?);
+	let mut img = {
+		let mut loader = image::ImageReader::new(std::io::Cursor::new(std::fs::read(input)?));
+		loader.set_format(img_format);
+		loader.decode().map_err(std::io::Error::other)?
+	};
+
 	let mut output_bw = std::io::BufWriter::with_capacity(
 		args.buffer_size * 1024,
 		output_file(&args.output, input.file_name(), img_format, out_format)?,
 	);
 
-	let img = filtering_options(
-		args,
-		image::load(&mut input_br, img_format).map_err(std::io::Error::other)?,
-	);
+	img = filtering_options(args, img);
 
 	match out_format {
 		image::ImageFormat::Jpeg => {
@@ -151,6 +153,9 @@ fn filtering_options(args: &arg::Args, mut img: image::DynamicImage) -> image::D
 	if let Some(sigma) = args.blur {
 		img = img.blur(sigma);
 	};
+	if let Some((kernel_size, sigma)) = args.ablur {
+		img = img.blur_advanced(crate::hacks::GaussianBlurParametersX::new(kernel_size, sigma).transmute())
+	}
 	if let Some(contrast) = args.contrast {
 		img = img.adjust_contrast(contrast);
 	};

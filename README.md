@@ -48,6 +48,8 @@ Options:
           Resize mode (relative scaling vs. absolute dimensions) [default: relative] [possible values: relative, stretch, crop]
       --blur <BLUR>
           Apply Gaussian blur. Value is the blur sigma
+      --ablur <ABLUR>
+          Apply Advance Gaussian blur. `"kernel_size,sigma"`. Example: `"3,0.8"` → kernel_size=3, sigma=0.8
       --contrast <CONTRAST>
           Adjust image contrast. Positive values increase contrast, negative decrease
       --brighten <BRIGHTEN>

@@ -26,6 +26,7 @@ webp = { git = "https://github.com/radioactiveAHM/webp.git" }
 panic = "abort"
 codegen-units = 1
 lto = true
-opt-level = 3
+opt-level = 2 # in this case 2 performing better than 3
 strip = true
 debug = false
+overflow-checks = false

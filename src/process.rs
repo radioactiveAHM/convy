@@ -2,16 +2,6 @@ use std::io::Write;
 
 use crate::arg;
 
-pub fn bulk_process(dir_entries: Vec<std::path::PathBuf>, args: &arg::Args) {
-	for path in dir_entries {
-		if path.is_file()
-			&& let Err(e) = process(args, &path)
-		{
-			println!("{e}");
-		}
-	}
-}
-
 pub fn process(args: &arg::Args, input: &std::path::PathBuf) -> std::io::Result<()> {
 	let img_format = parse_type(input)?;
 	let out_format = if let Some(format_string) = &args.output_format {

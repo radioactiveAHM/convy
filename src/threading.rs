@@ -3,19 +3,38 @@ pub fn with_threads(args: crate::arg::Args) {
 		panic!("bulk processing requires the output path to be a directory.")
 	}
 
-	let dir_entries: Vec<std::fs::DirEntry> = std::fs::read_dir(&args.input).unwrap().filter_map(Result::ok).collect();
+	let mut dir_entries = std::fs::read_dir(&args.input)
+		.unwrap()
+		.filter_map(Result::ok)
+		.collect::<Vec<std::fs::DirEntry>>();
+	dir_entries.reverse();
+	let dir_entries = std::sync::Arc::new(std::sync::Mutex::new(dir_entries));
 	let threads = threads(args.threads);
 
 	let mut handles = Vec::with_capacity(threads);
 	let arc_args = std::sync::Arc::new(args);
-	for chunck in dir_entries.chunks(dir_entries.len().div_ceil(threads)) {
+	for _ in 0..threads {
 		let args = arc_args.clone();
-		let dir_entries = chunck.iter().map(|entry| entry.path()).collect();
-		handles.push(std::thread::spawn(|| {
-			let args = args;
-			crate::process::bulk_process(dir_entries, &args);
+		let dir_entries = dir_entries.clone();
+		handles.push(std::thread::spawn(move || {
+			loop {
+				// if let pattern holds the lock
+				let entry_option = { dir_entries.lock().unwrap().pop() };
+
+				if let Some(entry) = entry_option {
+					let entry_path = entry.path();
+					if entry_path.is_file()
+						&& let Err(e) = crate::process::process(&args, &entry_path)
+					{
+						println!("{e}");
+					}
+				} else {
+					break;
+				}
+			}
 		}));
 	}
+
 	for handle in handles {
 		handle.join().unwrap();
 	}

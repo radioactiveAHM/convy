@@ -3,11 +3,11 @@ pub fn with_threads(args: crate::arg::Args) {
 		panic!("bulk processing requires the output path to be a directory.")
 	}
 
-	let mut dir_entries = std::fs::read_dir(&args.input)
+	let dir_entries = std::fs::read_dir(&args.input)
 		.unwrap()
 		.filter_map(Result::ok)
 		.collect::<Vec<std::fs::DirEntry>>();
-	dir_entries.reverse();
+
 	let dir_entries = std::sync::Arc::new(std::sync::Mutex::new(dir_entries));
 	let threads = threads(args.threads);
 

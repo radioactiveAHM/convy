@@ -193,7 +193,7 @@ pub struct Args {
 	#[arg(long, value_enum)]
 	pub color: Option<Color>,
 
-	/// Jpeg/Webp quality
+	/// Jpeg/Webp/Avif quality
 	#[arg(short, long, default_value_t = 100)]
 	pub quality: u8,
 
@@ -203,6 +203,19 @@ pub struct Args {
 	/// Webp hint. DEFAULT = 0, PICTURE = 1, PHOTO = 2, GRAPH = 3, LAST = 4
 	#[arg(long, default_value_t = 0)]
 	pub hint: i32,
+	/// Webp filter strength. possible values: 0-100.
+	#[arg(long, default_value_t = 0)]
+	pub filter_strength: i32,
+	/// Webp filter sharpness. possible values: 0-7.
+	#[arg(long, default_value_t = 0)]
+	pub filter_sharpness: i32,
+	/// Webp filter type. possible values: 0 and 1.
+	#[arg(long, default_value_t = 0)]
+	pub filter_type: i32,
+
+	/// Avif speed. 1-10.
+	#[arg(long, default_value_t = 1)]
+	pub speed: u8,
 
 	/// Png compression type. [possible values: 1-9, best, default, fast, uncompressed].
 	#[arg(long, value_parser = parse_compression_type)]

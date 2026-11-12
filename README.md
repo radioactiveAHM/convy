@@ -21,7 +21,7 @@ It’s designed for quick batch conversions, resizing, and transformations witho
 ```bash
 git clone https://github.com/radioactiveAHM/convy
 cd convy
-RUSTFLAGS="-Ctarget-cpu=native" cargo build --release
+CFLAGS="-O3 -flto -march=native -mtune=native" RUSTFLAGS="-C target-cpu=native" cargo build --release
 ```
 
 ---
@@ -71,11 +71,19 @@ Options:
       --color <COLOR>
           Convert image to a different color format [possible values: rgb8, rgb16, rgb32, rgba8, rgba16, rgba32, luma8, luma16, luma-a8, luma-a16]
   -q, --quality <QUALITY>
-          Jpeg/Webp quality [default: 100]
+          Jpeg/Webp/Avif quality [default: 100]
       --method <METHOD>
           Webp method level. possible values: 1-6 [default: 6]
       --hint <HINT>
           Webp hint. DEFAULT = 0, PICTURE = 1, PHOTO = 2, GRAPH = 3, LAST = 4 [default: 0]
+      --filter-strength <FILTER_STRENGTH>
+          Webp filter strength. possible values: 0-100 [default: 0]
+      --filter-sharpness <FILTER_SHARPNESS>
+          Webp filter sharpness. possible values: 0-7 [default: 0]
+      --filter-type <FILTER_TYPE>
+          Webp filter type. possible values: 0 and 1 [default: 0]
+      --speed <SPEED>
+          Avif speed. 1-10 [default: 1]
       --compression-type <COMPRESSION_TYPE>
           Png compression type. [possible values: 1-9, best, default, fast, uncompressed]
       --png-filtertype <PNG_FILTERTYPE>

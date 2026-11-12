@@ -51,6 +51,10 @@ pub fn process(args: &arg::Args, input: &std::path::PathBuf) -> std::io::Result<
 				webp_config.alpha_compression = 1;
 				webp_config.method = args.method;
 				webp_config.thread_level = 1;
+				webp_config.filter_strength = args.filter_strength;
+				webp_config.filter_sharpness = args.filter_sharpness;
+				webp_config.filter_type = args.filter_type;
+				webp_config.autofilter = 0;
 
 				match args.hint {
 					0 => webp_config.image_hint = libwebp_sys::WebPImageHint::WEBP_HINT_DEFAULT,
@@ -79,6 +83,14 @@ pub fn process(args: &arg::Args, input: &std::path::PathBuf) -> std::io::Result<
 				img.write_to(&mut output_bw, out_format).map_err(std::io::Error::other)
 			}
 		}
+		image::ImageFormat::Avif => image::ImageEncoder::write_image(
+			image::codecs::avif::AvifEncoder::new_with_speed_quality(&mut output_bw, args.speed, args.quality),
+			img.as_bytes(),
+			img.width(),
+			img.height(),
+			image::ExtendedColorType::from(img.color()),
+		)
+		.map_err(std::io::Error::other),
 		_ => img.write_to(&mut output_bw, out_format).map_err(std::io::Error::other),
 	}
 }
